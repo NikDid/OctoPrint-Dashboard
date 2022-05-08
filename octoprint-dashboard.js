@@ -12,11 +12,11 @@ const app = express();
 const port = 3000;      //Webserver Port
 
 let getheaders = {
-    'X-Api-Key' : 'AA42780D5D1849D69371B0157E33CA86'    //API key, needs to be generated in OctoPrint
+    'X-Api-Key' : ''    //API key, needs to be generated in OctoPrint
 };
 
 let optionsGet = {
-    host : '192.168.0.106', //Octopi server IP -- Server hostname was soemtimes causing issues, IP always seemed to work.
+    host : '', //Octopi server IP -- Server hostname was soemtimes causing issues, IP always seemed to work.
     port : 80,              //Octopi server default is part 80
     path : '/api/server',   //default server api
     method : 'GET',         //we only make GET calls
