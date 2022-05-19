@@ -120,7 +120,7 @@ const loadPrinterInfo = () => {
 
     const x = `
         <div class="temps">
-            Tempreture:<br />
+            Temperature:<br />
             <table class="temps">
                 <tr>
                     <td></td>
@@ -143,8 +143,55 @@ const loadPrinterInfo = () => {
 
     document.getElementById('tempinfo').innerHTML = x;
 
+    updateGraph(tempToolData,tool0Act,tempBedData,bedAct);
+
 }
 
+let tempToolData = new Array();
+let tempBedData = new Array();
+
+
+const updateGraph = (currToolData, newToolTemp, currBedData, newBedTemp) => {
+    if (currToolData.length > 25) {
+        currToolData.shift()
+    }
+    currToolData.push(newToolTemp);
+
+    if (currBedData.length > 25) {
+        currBedData.shift()
+    }
+    currBedData.push(newBedTemp);
+
+    let retVal = "<svg width=\"325\" height=\"225\">";
+    retVal += "<rect width=\"270\" height=\"225\" style=\"fill:rgb(200,200,200);stroke-width:3;stroke:rgb(0,0,0)\" />";
+    retVal += "<text x=\"275\" y=\"15\" fill=\"White\">225 C</text>";
+    retVal += "<text x=\"275\" y=\"220\" fill=\"White\">0 C</text>";
+    for (let i = 0; i < currToolData.length; i++) {
+        retVal += buildToolLine(currToolData[i], currToolData[i-1], i);
+        retVal += buildBedLine(currBedData[i], currBedData[i-1], i);
+    }
+
+    retVal += "</svg>";
+    document.getElementById("graph").innerHTML = retVal;
+}
+
+const buildToolLine = (next, previous, index) => {
+    return buildLine(next, previous, index, "rgb(255,0,0)")
+}
+
+const buildBedLine = (next, previous, index) => {
+    return buildLine(next, previous, index, "rgb(0,0,255)")
+}
+
+const buildLine = (next, previous, index, color) => {
+    if (next == null) return "Sorry, your browser does not support inline SVG.";
+    if (previous == null) return "";
+    var x1Val = index * 10;
+    var x2Val = (index+1) * 10;
+    var y1Val = 225 - previous;
+    var y2Val = 225 - next;
+    return "<line x1=\""+x1Val+"\" y1=\""+y1Val+"\" x2=\""+x2Val+"\" y2=\""+y2Val+"\" style=\"stroke:"+color+";stroke-width:2\" />";
+}
 
 loadWebCam();
 
