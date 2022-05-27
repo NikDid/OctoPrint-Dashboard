@@ -10,3 +10,33 @@ div {
 table.temps td {
     border: 1px solid;
 }
+
+table.progbar {
+    width: 100%;
+    border: 1px solid;
+}
+
+table.progbar tr {
+    height: 25px;
+    border: 1px solid;
+}
+
+table td.bedact {
+    color: rgb(75, 75, 255);
+    border: 1px solid white;
+}
+
+table td.bedtar {
+    color: lightskyblue;
+    border: 1px solid white;
+}
+
+table td.t0act {
+    color: red;
+    border: 1px solid white;
+}
+
+table td.t0tar {
+    color: pink;
+    border: 1px solid white;
+}

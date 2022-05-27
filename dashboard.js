@@ -18,8 +18,8 @@ const progressBar = (progress) => {
 
     const x = `
         <div class="progressBar">
-            <table style="width:100%;border: 1px solid;">
-                <tr style="height:50px;">
+            <table class="progbar">
+                <tr>
                     <td style="width:${prog}%; background-color:blue;"></td>
                     <td style="width:${left}%;"></td>
                 </tr>
@@ -33,7 +33,7 @@ const progressBar = (progress) => {
 const loadWebCam = () => {
     const xhttp = new XMLHttpRequest();
 
-    xhttp.open("GET", "/webcam", false);
+    xhttp.open("GET", "/webcamafter", false);
     xhttp.send();
     //<img id="webcam" src="http://octopi/webcam/?action=stream" />
     document.getElementById('webcaminfo').innerHTML = xhttp.responseText;
@@ -120,22 +120,22 @@ const loadPrinterInfo = () => {
 
     const x = `
         <div class="temps">
-            Temperature:<br />
             <table class="temps">
                 <tr>
+                    <td></td>
+                    <td>Actual</td>
+                    <td>Target</td>
                     <td></td>
                     <td>Actual</td>
                     <td>Target</td>
                 </tr>
                 <tr>
                     <td>Bed</td>
-                    <td>${bedAct}</td>
-                    <td>${bedTar}</td>
-                </tr>
-                <tr>
+                    <td class="bedact">${bedAct}</td>
+                    <td class="bedtar">${bedTar}</td>
                     <td>Tool0</td>
-                    <td>${tool0Act}</td>
-                    <td>${tool0Tar}</td>
+                    <td class="t0act">${tool0Act}</td>
+                    <td class="t0tar">${tool0Tar}</td>
                 </tr>
             </table>
         </div>
@@ -176,11 +176,11 @@ const updateGraph = (currToolData, newToolTemp, currBedData, newBedTemp) => {
 }
 
 const buildToolLine = (next, previous, index) => {
-    return buildLine(next, previous, index, "rgb(255,0,0)")
+    return buildLine(next, previous, index, "rgb(255, 0, 0)")
 }
 
 const buildBedLine = (next, previous, index) => {
-    return buildLine(next, previous, index, "rgb(0,0,255)")
+    return buildLine(next, previous, index, "rgb(75, 75, 255)")
 }
 
 const buildLine = (next, previous, index, color) => {
@@ -193,8 +193,11 @@ const buildLine = (next, previous, index, color) => {
     return "<line x1=\""+x1Val+"\" y1=\""+y1Val+"\" x2=\""+x2Val+"\" y2=\""+y2Val+"\" style=\"stroke:"+color+";stroke-width:2\" />";
 }
 
-loadWebCam();
+//Uncomment to have it load as soon as page loads. Else wait on the timers below.
+//loadWebCam();
+//loadJobInfo();
+//loadPrinterInfo();
 
-let jobID = setInterval(loadJobInfo, 1000);
-let printerID = setInterval(loadPrinterInfo, 1000);
-
+let jobID = setInterval(loadJobInfo, 5000);
+let printerID = setInterval(loadPrinterInfo, 5000);
+let webcamID = setInterval(loadWebCam, 10000);

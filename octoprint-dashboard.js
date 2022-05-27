@@ -1,8 +1,8 @@
-const express = require('express')
+const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const http = require('http')
-const fs = require('fs')
+const http = require('http');
+const fs = require('fs');
 
 const app = express();
 
@@ -52,7 +52,8 @@ app.get('/webcam', (req, res) => {   //have to call webcam in iframe because of 
 });
 
 app.get('/webcamafter', (req, res) => {   //Can only use this fomr the computer that is hosting node because of CORS
-    res.send('<img id="webcam" style="width:640; height:480" src="http://'+optionsGet.host+'/webcam/?action=stream" />');
+    const ts = Date.now();
+    res.send('<img id="webcam" src="/view?'+ts+'" />'); //style="width:640; height:480" 
 });
 
 //API pass through to prevent CORS rejection in browser
@@ -108,5 +109,20 @@ app.get('/job', (req, res) => {
 
 });
 
+app.get('/view', (req, res) => {
+    //req.pipe(req.get('http://'+optionsGet.host+'/webcam/?action=snapshot')).pipe(res);
+    const file = fs.createWriteStream('octopi.jpeg');
+    const request = http.get('http://'+optionsGet.host+'/webcam/?action=snapshot', function(response) {
+        response.pipe(file);
+
+        // after download completed close filestream
+        file.on("finish", () => {
+            file.close();
+            res.writeHead(200, { 'content-type': 'image/jpeg' });
+            fs.createReadStream('octopi.jpeg').pipe(res);
+
+        });
+    });
+});
 
 app.listen(port, () => console.log(`Octoprint Dashboard listening on port ${port}!`));
