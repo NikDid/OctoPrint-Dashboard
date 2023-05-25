@@ -32,11 +32,21 @@ const progressBar = (progress) => {
 
 const loadWebCam = () => {
     const xhttp = new XMLHttpRequest();
-
-    xhttp.open("GET", "/webcamafter", false);
+    xhttp.open("GET", "/webcamoption", false);
     xhttp.send();
-    //<img id="webcam" src="http://octopi/webcam/?action=stream" />
-    document.getElementById('webcaminfo').innerHTML = xhttp.responseText;
+    const webcamjson = JSON.parse(xhttp.responseText);
+    let webcampoption = 'screenshot';
+    try {
+        webcampoption = webcamjson.webcam;
+    } catch (ex) {};
+
+    if (webcampoption == 'stream') {
+        document.getElementById('webcaminfo').innerHTML = '<img style="display: block;-webkit-user-select: none;margin: auto;background-color: hsl(0, 0%, 25%); height: 480px;" src="/webcamstream"></img>';    
+    } else {
+        xhttp.open("GET", "/webcamafter", false);
+        xhttp.send();
+        document.getElementById('webcaminfo').innerHTML = xhttp.responseText;
+    }
 }
 
 const loadJobInfo = () => {

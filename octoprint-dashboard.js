@@ -20,7 +20,8 @@ let optionsGet = {
     port : 80,              //Octopi server default is part 80
     path : '/api/server',   //default server api
     method : 'GET',         //we only make GET calls
-    headers : getheaders
+    headers : getheaders,
+    webcamStream : true     //true=Use webcam stream; false=Use screen shots
 };
 
 /************************************************************************************/
@@ -47,13 +48,34 @@ app.get('/dashboard.css', (req, res) => {   //CSS for styling dashboard
     fs.createReadStream('dashboard.css').pipe(res);
 });
 
+app.get('/webcamoption', (req, res) => {
+    if (optionsGet.webcamStream === true) {
+        res.send('{"webcam":"stream"}');
+    } else {
+        res.send('{"webcam":"screenshot"}');
+    }
+});
+
 app.get('/webcam', (req, res) => {   //have to call webcam in iframe because of CORS
     res.send('<iframe id="webcam" style="width:640; height:480" src="http://'+optionsGet.host+'/webcam/?action=stream"></iframe>');
 });
 
+//Proxy Stream data
+let target = 'http://'+optionsGet.host+'/webcam/?action=stream';
+// figure out 'real' target if the server returns a 302 (redirect)
+http.get(target, resp => {
+  if(resp.statusCode == 302) {
+    target = resp.headers.location;
+  }
+});
+app.get('/webcamstream', (req, res) => {
+    var request = require('request');
+    req.pipe(request.get(target)).pipe(res);
+});
+
 app.get('/webcamafter', (req, res) => {   //Can only use this fomr the computer that is hosting node because of CORS
     const ts = Date.now();
-    res.send('<img id="webcam" src="/view?'+ts+'" />'); //style="width:640; height:480" 
+    res.send('<img id="webcam" style="height:480px;" src="/view?'+ts+'" />'); //style="width:640; height:480" 
 });
 
 //API pass through to prevent CORS rejection in browser
